@@ -22,7 +22,7 @@ class Keyword_recommender:
     def get_list(self, x):
         if isinstance(x, list):
             names = [i['name'] for i in x]
-            # Check if more than 3 elements exist. If yes, return only first three. If no, return entire list.
+
             if len(names) > 3:
                 names = names[:3]
             return names
@@ -32,7 +32,6 @@ class Keyword_recommender:
         if isinstance(x, list):
             return [str.lower(i.replace(" ", "")) for i in x]
         else:
-            # Check if director exists. If not, return empty string
             if isinstance(x, str):
                 return str.lower(x.replace(" ", ""))
             else:
@@ -44,7 +43,6 @@ class Keyword_recommender:
         features = ['cast', 'keywords', 'genres']
         for feature in features:
             self.movies[feature] = self.movies[feature].apply(self.get_list)
-        # print(self.movies[['title', 'cast', 'director', 'keywords', 'genres']].head(3))
         features = ['cast', 'keywords', 'director', 'genres']
 
         for feature in features:
@@ -63,19 +61,14 @@ class Keyword_recommender:
         indices = pd.Series(self.movies.index, index=self.movies['title'])
         idx = indices[title]
 
-        # Get the pairwsie similarity scores of all movies with that movie
         sim_scores = list(enumerate(self.cosine_sim[idx]))
 
-        # Sort the movies based on the similarity scores
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-        # Get the scores of the 10 most similar movies
         sim_scores = sim_scores[1:11]
 
-        # Get the movie indices
         movie_indices = [i[0] for i in sim_scores]
 
-        # Return the top 10 most similar movies
         return self.movies['title'].iloc[movie_indices]
 
 
